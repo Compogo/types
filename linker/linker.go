@@ -94,6 +94,15 @@ func (linker *Linker[T, I]) Len() int {
 	return len(linker.values)
 }
 
+func (linker *Linker[T, I]) Keys() []T {
+	keys := make([]T, 0, len(linker.values))
+	for k := range linker.values {
+		keys = append(keys, k)
+	}
+
+	return keys
+}
+
 func (linker *Linker[T, I]) All() iter.Seq2[T, I] {
 	return func(yield func(T, I) bool) {
 		for key, value := range linker.values {
