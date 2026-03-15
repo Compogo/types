@@ -8,7 +8,7 @@ import (
 
 // Subscriber represents a function that handles emitted events.
 // It receives a context for cancellation and the event value.
-type Subscriber[T any] func(value T)
+type Subscriber[T any] func(ctx context.Context, value T)
 
 // UnsubscribeFunc is a function returned by Subscribe() to remove a subscriber.
 // Calling it unsubscribes the handler from future events.
@@ -60,7 +60,7 @@ func (emitter *emitter[T]) Emit(ctx context.Context, value T) {
 			defer cancelFunc()
 			defer emitter.wg.Done()
 
-			subscriber(value)
+			subscriber(ctx, value)
 		}(ctx, subscriber)
 	}
 }
