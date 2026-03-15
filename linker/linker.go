@@ -90,6 +90,10 @@ func (linker *Linker[T, I]) Remove(key T) {
 	delete(linker.values, key)
 }
 
+func (linker *Linker[T, I]) Len() int {
+	return len(linker.values)
+}
+
 func (linker *Linker[T, I]) All() iter.Seq2[T, I] {
 	return func(yield func(T, I) bool) {
 		for key, value := range linker.values {
