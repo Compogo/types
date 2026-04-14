@@ -152,3 +152,7 @@ func (hs *HashSlice[T]) All() iter.Seq2[int, T] {
 		}
 	}
 }
+
+func (hs *HashSlice[T]) ToSlice() []T {
+	return hs.items
+}
