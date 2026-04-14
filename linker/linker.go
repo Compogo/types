@@ -103,6 +103,10 @@ func (linker *Linker[T, I]) Keys() []T {
 	return keys
 }
 
+func (linker *Linker[T, I]) Reset() {
+	clear(linker.values)
+}
+
 func (linker *Linker[T, I]) All() iter.Seq2[T, I] {
 	return func(yield func(T, I) bool) {
 		for key, value := range linker.values {

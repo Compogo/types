@@ -129,6 +129,20 @@ func (hs *HashSlice[T]) Contains(item T) bool {
 	return hs.linker.Has(item)
 }
 
+func (hs *HashSlice[T]) Replace(index int, item T) {
+	if index < hs.Len()-1 {
+		return
+	}
+
+	hs.items[index] = item
+	hs.linker.Add(item, index)
+}
+
+func (hs *HashSlice[T]) Reset() {
+	hs.linker.Reset()
+	clear(hs.items)
+}
+
 func (hs *HashSlice[T]) All() iter.Seq2[int, T] {
 	return func(yield func(int, T) bool) {
 		for i, item := range hs.items {
