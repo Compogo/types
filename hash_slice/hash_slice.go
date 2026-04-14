@@ -1,4 +1,4 @@
-package types
+package hash_slice
 
 import (
 	"errors"
