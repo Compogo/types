@@ -22,8 +22,8 @@ func WithNormalizer[T comparable, I any](normalizer Normalizer[T]) Option[T, I] 
 	}
 }
 
-func KeyStringNormalizer[T string, I any]() Option[T, I] {
-	return WithNormalizer[T, I](func(key T) T {
-		return T(strings.ToLower(string(key)))
+func KeyStringNormalizer[I any]() Option[string, I] {
+	return WithNormalizer[string, I](func(key string) string {
+		return strings.ToLower(key)
 	})
 }
