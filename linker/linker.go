@@ -196,6 +196,11 @@ func (linker *Linker[T, I]) unionOptimization(l *Linker[T, I]) *Linker[T, I] {
 	return resultLinker
 }
 
+func (linker *Linker[T, I]) Replace(l *Linker[T, I]) {
+	linker.Reset()
+	maps.Copy(linker.values, l.values)
+}
+
 func Copy[T comparable, I any](dst *Linker[T, I], src *Linker[T, I]) {
 	for key, val := range src.values {
 		dst.Add(key, val)

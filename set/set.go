@@ -248,6 +248,16 @@ func (s *Set[T]) Reset() {
 	clear(*s)
 }
 
+func (s *Set[T]) Replace(set Set[T]) {
+	s.Reset()
+
+	if *s == nil {
+		*s = NewSet[T]()
+	}
+
+	maps.Copy(*s, set)
+}
+
 func (s *Set[T]) MarshalJSON() ([]byte, error) {
 	if s == nil {
 		return []byte("null"), nil
