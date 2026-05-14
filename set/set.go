@@ -94,6 +94,26 @@ func (s *Set[T]) Contains(item T) bool {
 	return isExists
 }
 
+func (s *Set[T]) ContainsAllAnd(items ...T) bool {
+	for _, item := range items {
+		if !s.Contains(item) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (s *Set[T]) ContainsAllOr(items ...T) bool {
+	for _, item := range items {
+		if s.Contains(item) {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (s *Set[T]) Remove(item T) {
 	if s == nil || *s == nil {
 		return
