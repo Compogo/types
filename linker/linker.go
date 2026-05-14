@@ -139,9 +139,7 @@ func (linker *Linker[T, I]) Intersection(l *Linker[T, I]) *Linker[T, I] {
 }
 
 func (linker *Linker[T, I]) Difference(l *Linker[T, I]) *Linker[T, I] {
-	var resultLinker *Linker[T, I]
-
-	var linkerForRange *Linker[T, I]
+	var resultLinker, linkerForRange *Linker[T, I]
 	if linker.Len() > l.Len() {
 		resultLinker = linker.Clone()
 		linkerForRange = l
@@ -159,4 +157,47 @@ func (linker *Linker[T, I]) Difference(l *Linker[T, I]) *Linker[T, I] {
 	}
 
 	return resultLinker
+}
+
+func (linker *Linker[T, I]) Union(l *Linker[T, I]) *Linker[T, I] {
+	return linker.UnionByStrategy(l, Optimization)
+}
+
+func (linker *Linker[T, I]) UnionByStrategy(l *Linker[T, I], strategy Strategy) *Linker[T, I] {
+	switch strategy {
+	case CurrentLinker:
+		resultSet := linker.Clone()
+		Copy(resultSet, l)
+		return resultSet
+	case IncomingLinker:
+		resultSet := l.Clone()
+		Copy(resultSet, linker)
+		return resultSet
+	default:
+		return linker.unionOptimization(l)
+	}
+}
+
+func (linker *Linker[T, I]) unionOptimization(l *Linker[T, I]) *Linker[T, I] {
+	var resultLinker, linkerForRange *Linker[T, I]
+
+	if linker.Len() > l.Len() {
+		resultLinker = linker.Clone()
+		linkerForRange = l
+	} else {
+		resultLinker = l.Clone()
+		linkerForRange = linker
+	}
+
+	for key, val := range linkerForRange.All() {
+		resultLinker.Add(key, val)
+	}
+
+	return resultLinker
+}
+
+func Copy[T comparable, I any](dst *Linker[T, I], src *Linker[T, I]) {
+	for key, val := range src.values {
+		dst.Add(key, val)
+	}
 }
