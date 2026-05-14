@@ -3,6 +3,7 @@ package linker
 import (
 	"fmt"
 	"iter"
+	"maps"
 
 	typeName "github.com/Compogo/tools/type_name"
 	"github.com/Compogo/types/mapper"
@@ -85,4 +86,77 @@ func (linker *Linker[T, I]) All() iter.Seq2[T, I] {
 			}
 		}
 	}
+}
+
+func (linker *Linker[T, I]) Clone() *Linker[T, I] {
+	return &Linker[T, I]{
+		values:     maps.Clone(linker.values),
+		typeName:   linker.typeName,
+		zeroValue:  linker.zeroValue,
+		normalizer: linker.normalizer,
+	}
+}
+
+func (linker *Linker[T, I]) HasAllAnd(items ...T) bool {
+	for _, item := range items {
+		if !linker.Has(item) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (linker *Linker[T, I]) HasAllOr(items ...T) bool {
+	for _, item := range items {
+		if linker.Has(item) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (linker *Linker[T, I]) Intersection(l *Linker[T, I]) *Linker[T, I] {
+	resultLinker := NewLinker[T, I]()
+
+	var linkerForRange, linkerForCondition *Linker[T, I]
+	if linker.Len() > l.Len() {
+		linkerForRange = l
+		linkerForCondition = linker
+	} else {
+		linkerForRange = linker
+		linkerForCondition = l
+	}
+
+	for key, val := range linkerForRange.All() {
+		if linkerForCondition.Has(key) {
+			resultLinker.Add(key, val)
+		}
+	}
+
+	return resultLinker
+}
+
+func (linker *Linker[T, I]) Difference(l *Linker[T, I]) *Linker[T, I] {
+	var resultLinker *Linker[T, I]
+
+	var linkerForRange *Linker[T, I]
+	if linker.Len() > l.Len() {
+		resultLinker = linker.Clone()
+		linkerForRange = l
+	} else {
+		resultLinker = l.Clone()
+		linkerForRange = linker
+	}
+
+	for key, val := range linkerForRange.All() {
+		if !resultLinker.Has(key) {
+			resultLinker.Add(key, val)
+		} else {
+			resultLinker.Remove(key)
+		}
+	}
+
+	return resultLinker
 }

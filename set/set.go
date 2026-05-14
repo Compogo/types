@@ -114,6 +114,70 @@ func (s *Set[T]) ContainsAllOr(items ...T) bool {
 	return false
 }
 
+func (s *Set[T]) Intersection(set Set[T]) Set[T] {
+	resultSet := NewSet[T]()
+
+	var setForRange, setForCondition Set[T]
+	//range for largest
+	if s.Len() > set.Len() {
+		setForRange = set
+		setForCondition = *s
+	} else {
+		setForRange = *s
+		setForCondition = set
+	}
+
+	for item := range setForRange {
+		if setForCondition.Contains(item) {
+			resultSet.Add(item)
+		}
+	}
+
+	return resultSet
+}
+
+func (s *Set[T]) Difference(set Set[T]) Set[T] {
+	if s == nil || *s == nil {
+		return set.Clone()
+	}
+
+	var resultSet Set[T]
+	var setForRange Set[T]
+
+	//copy the largest
+	if s.Len() > set.Len() {
+		resultSet = s.Clone()
+		setForRange = set
+	} else {
+		resultSet = set.Clone()
+		setForRange = *s
+	}
+
+	for item := range setForRange {
+		if !s.Contains(item) {
+			resultSet.Add(item)
+		} else {
+			resultSet.Remove(item)
+		}
+	}
+
+	return resultSet
+}
+
+func (s *Set[T]) Union(set Set[T]) Set[T] {
+	var resultSet Set[T]
+
+	if s.Len() > set.Len() {
+		resultSet = s.Clone()
+		resultSet.Add(set.ToSlice()...)
+	} else {
+		resultSet = set.Clone()
+		resultSet.Add(s.ToSlice()...)
+	}
+
+	return resultSet
+}
+
 func (s *Set[T]) Remove(item T) {
 	if s == nil || *s == nil {
 		return
