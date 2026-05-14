@@ -165,14 +165,33 @@ func (s *Set[T]) Difference(set Set[T]) Set[T] {
 }
 
 func (s *Set[T]) Union(set Set[T]) Set[T] {
+	return s.UnionByStrategy(set, Optimization)
+}
+
+func (s *Set[T]) UnionByStrategy(set Set[T], strategy Strategy) Set[T] {
+	switch strategy {
+	case CurrentSet:
+		resultSet := set.Clone()
+		maps.Copy(resultSet, *s)
+		return resultSet
+	case IncomingSet:
+		resultSet := s.Clone()
+		maps.Copy(resultSet, set)
+		return resultSet
+	default:
+		return s.unionOptimization(set)
+	}
+}
+
+func (s *Set[T]) unionOptimization(set Set[T]) Set[T] {
 	var resultSet Set[T]
 
 	if s.Len() > set.Len() {
 		resultSet = s.Clone()
-		resultSet.Add(set.ToSlice()...)
+		maps.Copy(resultSet, set)
 	} else {
 		resultSet = set.Clone()
-		resultSet.Add(s.ToSlice()...)
+		maps.Copy(resultSet, *s)
 	}
 
 	return resultSet
