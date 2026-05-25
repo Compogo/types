@@ -47,13 +47,9 @@ type HashSlice[T comparable] struct {
 	zeroValue T
 }
 
-func NewHashSlice[T comparable](items ...T) (*HashSlice[T], error) {
-	hs := &HashSlice[T]{
-		linker:    linker.NewLinker[T, int](),
-		items:     make([]T, 0, len(items)),
-		typeName:  fmt.Sprintf("HashSlice[%s]", typeName.TypeName[T]()),
-		zeroValue: *new(T),
-	}
+func NewHashSliceFilling[T comparable](items ...T) (*HashSlice[T], error) {
+	hs := NewHashSlice[T]()
+	hs.items = make([]T, 0, len(items))
 
 	var err error
 	for _, item := range items {
@@ -63,6 +59,15 @@ func NewHashSlice[T comparable](items ...T) (*HashSlice[T], error) {
 	}
 
 	return hs, nil
+}
+
+func NewHashSlice[T comparable]() *HashSlice[T] {
+	return &HashSlice[T]{
+		linker:    linker.NewLinker[T, int](),
+		items:     nil,
+		typeName:  fmt.Sprintf("HashSlice[%s]", typeName.TypeName[T]()),
+		zeroValue: *new(T),
+	}
 }
 
 func (hs *HashSlice[T]) Len() int {
