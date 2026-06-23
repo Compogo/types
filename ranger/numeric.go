@@ -58,7 +58,7 @@ func maxValue[T Numeric]() T {
 	case int64:
 		return any(math.MaxInt64).(T)
 	case uint:
-		return any(math.MaxUint32).(T)
+		return any(math.MaxUint).(T)
 	case uint8:
 		return any(math.MaxUint8).(T)
 	case uint16:
