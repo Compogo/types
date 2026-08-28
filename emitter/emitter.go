@@ -150,10 +150,14 @@ func (emitter *emitter[T]) Emit(ctx context.Context, value T) {
 
 	emitter.wg.Add(len(emitter.subscribers))
 	for _, subscriber := range emitter.subscribers {
-		go func(ctx context.Context, subscriber Subscriber[T]) {
+		go func(ctx context.Context, subscriber Subscriber[T], value T) {
 			defer emitter.wg.Done()
+
+			ctx, cancelFunc := context.WithCancel(ctx)
+			defer cancelFunc()
+
 			subscriber(ctx, &value)
-		}(ctx, subscriber)
+		}(ctx, subscriber, value)
 	}
 }
 
