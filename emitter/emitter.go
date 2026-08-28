@@ -90,7 +90,7 @@ type Emitter[T any] interface {
 	// Emit отправляет значение всем подписчикам.
 	// Каждый подписчик выполняется в своей горутине асинхронно.
 	// Параметр ctx передаётся каждому подписчику для поддержки отмены.
-	Emit(ctx context.Context, value T)
+	Emit(ctx context.Context, value *T)
 
 	// Subscribe добавляет нового подписчика и возвращает функцию для отписки.
 	// Подписчик будет получать все будущие события.
@@ -144,7 +144,7 @@ func NewEmitter[T any]() Emitter[T] {
 //	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 //	defer cancel()
 //	emitter.Emit(ctx, 42)
-func (emitter *emitter[T]) Emit(ctx context.Context, value T) {
+func (emitter *emitter[T]) Emit(ctx context.Context, value *T) {
 	emitter.mutex.RLock()
 	defer emitter.mutex.RUnlock()
 
@@ -157,7 +157,7 @@ func (emitter *emitter[T]) Emit(ctx context.Context, value T) {
 			defer cancelFunc()
 
 			subscriber(ctx, &value)
-		}(ctx, subscriber, value)
+		}(ctx, subscriber, *value)
 	}
 }
 
