@@ -63,7 +63,7 @@ import (
 //
 // Пример:
 //
-//	subscriber := func(ctx context.Context, value string) {
+//	subscriber := func(ctx context.Context, value *string) {
 //	    select {
 //	    case <-ctx.Done():
 //	        log.Printf("Обработка отменена: %v", ctx.Err())
@@ -72,7 +72,7 @@ import (
 //	        process(value)
 //	    }
 //	}
-type Subscriber[T any] func(ctx context.Context, value T)
+type Subscriber[T any] func(ctx context.Context, value *T)
 
 // UnsubscribeFunc — функция для отписки от событий.
 // Вызов этой функции удаляет подписчика из эмиттера.
@@ -152,7 +152,7 @@ func (emitter *emitter[T]) Emit(ctx context.Context, value T) {
 	for _, subscriber := range emitter.subscribers {
 		go func(ctx context.Context, subscriber Subscriber[T]) {
 			defer emitter.wg.Done()
-			subscriber(ctx, value)
+			subscriber(ctx, &value)
 		}(ctx, subscriber)
 	}
 }
