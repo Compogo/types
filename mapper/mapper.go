@@ -36,6 +36,7 @@ package mapper
 import (
 	"fmt"
 	"iter"
+	"maps"
 	"strings"
 
 	typeName "github.com/Compogo/tools/type_name"
@@ -243,4 +244,16 @@ func (mapper *Mapper[T]) All() iter.Seq2[string, T] {
 			}
 		}
 	}
+}
+
+func (mapper *Mapper[T]) Clone() *Mapper[T] {
+	newMapper := &Mapper[T]{
+		items:     make(map[string]T, len(mapper.items)),
+		typeName:  mapper.typeName,
+		zeroValue: mapper.zeroValue,
+	}
+
+	maps.Copy(newMapper.items, mapper.items)
+
+	return newMapper
 }
